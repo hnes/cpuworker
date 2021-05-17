@@ -4,6 +4,31 @@
 
 Working in process.
 
+## Demo
+
+Make sure the GOMAXPROCS is bigger than 1 and there is at least `GOMAXPROCS` physical OS threads available.
+
+Run the example/demo.go.
+
+```bash
+# cmd 1
+while true; do sleep 1;ab -s10000000 -c 10 -n 60 http://127.0.0.1:8080/delay1ms; done
+
+# cmd 2
+while true; do sleep 1;ab -s10000000 -c 10 -n 60 http://127.0.0.1:8080/checksumWithoutCpuWorker; done
+
+# cmd 3
+while true; do sleep 1;ab -s10000000 -c 10 -n 60 http://127.0.0.1:8080/checksumWithCpuWorker; done
+```
+
+Step 1: Killall already existing cmd `x`, then run the cmd 1.
+
+Step 2: Killall already existing cmd `x`, then run the cmd 1 and cmd 2 simultaneously.
+
+Step 3: Killall already existing cmd `x`, then run the cmd 1 and cmd 3 simultaneously.
+
+Please watch the latency which cmd 1 yields carefully at every step and then you would catch the difference :-D
+
 ## Contributing
 
 Welcome to contribute 🎉🎉🎉

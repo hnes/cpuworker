@@ -50,22 +50,20 @@ func cpuIntensiveTaskWithCheckpoint(amt int, checkpointFp func()) uint32 {
 	return ck
 }
 
-func handleChecksumHasCheckpoint(w http.ResponseWriter, _ *http.Request) {
+func handleChecksumWithCpuWorkerAndHasCheckpoint(w http.ResponseWriter, _ *http.Request) {
 	ts := time.Now()
 	var ck uint32
 	cpuworker.Submit1(func(checkpointFp func()) {
-		ck = cpuIntensiveTaskWithCheckpoint(100000+mathrand.Intn(100000), checkpointFp)
+		ck = cpuIntensiveTaskWithCheckpoint(10000+mathrand.Intn(10000), checkpointFp)
 	}).Sync()
-	w.Write([]byte(fmt.Sprintln("crc32 (with checkpoint):", ck, "time cost:", time.Now().Sub(ts))))
+	w.Write([]byte(fmt.Sprintln("crc32 (with cpuworker and checkpoint):", ck, "time cost:", time.Now().Sub(ts))))
 }
 
-func handleChecksumNoCheckpoint(w http.ResponseWriter, _ *http.Request) {
+func handleChecksumWithoutCpuWorker(w http.ResponseWriter, _ *http.Request) {
 	ts := time.Now()
 	var ck uint32
-	cpuworker.Submit(func() {
-		ck = cpuIntensiveTask(10)
-	}).Sync()
-	w.Write([]byte(fmt.Sprintln("crc32 (without checkpoint):", ck, "time cost:", time.Now().Sub(ts))))
+	ck = cpuIntensiveTask(10000 + mathrand.Intn(10000))
+	w.Write([]byte(fmt.Sprintln("crc32 (without cpuworker):", ck, "time cost:", time.Now().Sub(ts))))
 }
 
 func handleDelay(w http.ResponseWriter, _ *http.Request) {
@@ -84,8 +82,8 @@ func main() {
 	nCPU := runtime.GOMAXPROCS(0)
 	cpuP := cpuworker.GetGlobalWorkers().GetMaxP()
 	fmt.Println("GOMAXPROCS:", nCPU, "cpuWorkerMaxP:", cpuP, "length of crc32 bs:", len(glCrc32bs))
-	http.HandleFunc("/checksumNoCheckpoint", handleChecksumNoCheckpoint)
-	http.HandleFunc("/checksumHasCheckpoint", handleChecksumHasCheckpoint)
+	http.HandleFunc("/checksumWithCpuWorker", handleChecksumWithCpuWorkerAndHasCheckpoint)
+	http.HandleFunc("/checksumWithoutCpuWorker", handleChecksumWithoutCpuWorker)
 	http.HandleFunc("/delay1ms", handleDelay)
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }
