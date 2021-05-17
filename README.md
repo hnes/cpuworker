@@ -39,4 +39,4 @@ Before your pull request is merged, you must sign the [Developer Certificate of 
 
 Copyright (C) 2021, by the cpuworker Authors
 
-Unless otherwise noted, the Veela source files are distributed under the Apache License Version 2.0. See the [LICENSE](LICENSE) file for details.
+Unless otherwise noted, the cpuworker source files are distributed under the Apache License Version 2.0. See the [LICENSE](LICENSE) file for details.
