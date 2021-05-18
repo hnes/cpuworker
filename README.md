@@ -380,7 +380,7 @@ Percentage of the requests served within a certain time (ms)
 At step 4, the latency of `checksumSmallTaskWithCpuWorker` is around 10ms, that is because:
 
 - the DefaultMaxTimeSlice of cpuworker is 10ms (feel free to tune it if you like)
-- cpuworker's scheduler thinks the new task always has a higher priority than current running and suspended tasks, so if the running tasks reach its MaxTimeSlice limit, the scheduler will suspend it at checkpoint and let the new task to run as sonn as possible
+- cpuworker's scheduler thinks the new task always has a higher priority than current running and suspended tasks, so if the running tasks reach its MaxTimeSlice limit, the scheduler will suspend it at checkpoint and let the new task to run as soon as possible
 
 ## Contributing
 
