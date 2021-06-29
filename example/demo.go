@@ -19,6 +19,8 @@ import (
 	"fmt"
 	"hash/crc32"
 	"log"
+	_ "net/http/pprof"
+
 	mathrand "math/rand"
 	"net/http"
 	"runtime"
@@ -86,14 +88,53 @@ func handleDelay(w http.ResponseWriter, _ *http.Request) {
 	w.Write([]byte(fmt.Sprintf("delayed 1ms, time cost %s :)\n", time.Now().Sub(t0))))
 }
 
+func handleDelayLoop(w http.ResponseWriter, _ *http.Request) {
+	t0 := time.Now()
+	for idx := range make([]byte, 10) {
+		t0 := time.Now()
+		wCh := make(chan struct{})
+		go func() {
+			time.Sleep(time.Millisecond)
+			wCh <- struct{}{}
+		}()
+		<-wCh
+		w.Write([]byte(fmt.Sprintf("delayed 1ms loop, idx:%d , time cost %s :)\n", idx, time.Now().Sub(t0))))
+	}
+	w.Write([]byte(fmt.Sprintf("delayed 1ms loop, final , total time cost %s :)\n", time.Now().Sub(t0))))
+}
+
+func handleDelayLoopWithCpuWorker(w http.ResponseWriter, _ *http.Request) {
+	cpuworker.Submit3(func(eventCall func(func())) {
+		t0 := time.Now()
+		for idx := range make([]byte, 10) {
+			t0 := time.Now()
+			wCh := make(chan struct{})
+			go func() {
+				time.Sleep(time.Millisecond)
+				wCh <- struct{}{}
+			}()
+			eventCall(func() {
+				<-wCh
+				w.Write([]byte(fmt.Sprintf("delayed 1ms loop with cpuworker, idx:%d , time cost %s :)\n", idx, time.Now().Sub(t0))))
+			})
+		}
+		eventCall(func() {
+			w.Write([]byte(fmt.Sprintf("delayed 1ms loop with cpuworker, final , total time cost %s :)\n", time.Now().Sub(t0))))
+		})
+	}, 0, true).Sync()
+}
+
 func main() {
 	rand.Read(glCrc32bs)
 	nCPU := runtime.GOMAXPROCS(0)
 	cpuP := cpuworker.GetGlobalWorkers().GetMaxP()
-	fmt.Println("GOMAXPROCS:", nCPU, "cpuWorkerMaxP:", cpuP, "length of crc32 bs:", len(glCrc32bs))
+	fmt.Println("GOMAXPROCS:", nCPU, "DefaultMaxTimeSlice:", cpuworker.DefaultMaxTimeSlice,
+		"cpuWorkerMaxP:", cpuP, "length of crc32 bs:", len(glCrc32bs))
 	http.HandleFunc("/checksumWithCpuWorker", handleChecksumWithCpuWorkerAndHasCheckpoint)
 	http.HandleFunc("/checksumSmallTaskWithCpuWorker", handleChecksumSmallTaskWithCpuWorker)
 	http.HandleFunc("/checksumWithoutCpuWorker", handleChecksumWithoutCpuWorker)
 	http.HandleFunc("/delay1ms", handleDelay)
+	http.HandleFunc("/delay1msLoop", handleDelayLoop)
+	http.HandleFunc("/delay1msLoopWithCpuWorker", handleDelayLoopWithCpuWorker)
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }
