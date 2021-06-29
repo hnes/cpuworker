@@ -1,3 +1,11 @@
+## CPU-Worker 是什么
+
+CPU-Worker是一个位于Golang Runtime之上的应用层goroutine调度器。
+
+![](docs/img/cpuworker.png)
+
+优点：完全处于应用层，可根据具体业务的特点定制调度策略；对Golang Runtime没有改动，能兼容所有大于等于 Golang 1.1 的版本（即需要runtime支持Work-Stealing）。
+
 ## 术语定义
 
 **Event Intensive Task**，顾名思义，事件密集型任务，其生命周期中的绝大部分时间都在等待event（可称之为off-cpu），只有极少部分时间在进行cpu运算。在Golang中，这些事件包括：被阻塞的i/o操作，被阻塞的channel读写，timer等待，mutex lock等等场景。
@@ -32,14 +40,6 @@ Golang Runtime调度器的调度策略目前的实现为公平调度，但在实
 ![big-picture](docs/img/big-picture.png)
 
 从另一个角度来说，我们将Kernel提供的线程模型和Golang提供的协程模型作对比，除了Golang协程比线程天生的低成本高并发优势之外，Kernel线程模型中一些十分有用的机制在Golang Runtime的协程模型中目前并不能找到与之对应的实现，比如[调度策略与优先级的动态修改](https://man7.org/linux/man-pages/man7/sched.7.html)。
-
-## CPU-Worker 是什么
-
-CPU-Worker是一个位于Golang Runtime之上的应用层goroutine调度器。
-
-![](docs/img/cpuworker.png)
-
-优点：完全处于应用层，可根据具体业务的特点定制调度策略；对Golang Runtime没有改动，能兼容所有大于等于 Golang 1.1 的版本（即需要runtime支持Work-Stealing）。
 
 ## 实现原理
 
