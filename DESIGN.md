@@ -125,3 +125,13 @@ eventCallFp的执行流程是，首先判断入参是否为nil，若入参为nil
 ⑤ 完成Event Intensive Task的执行，Task将自己放到runnable task queue里，等待被恢复运行
 
 ⑥ Task结束运行
+
+自此，cpuworker的协程模型和内核提供的线程模型除了cpuworker需要协作抢占之外完全相同。所以，关于调度器的设计可以适当参考内核线程调度器的调度算法，另外，因为cpuworker是处于用户空间的，可以方便地做更多针对业务特性的定制与优化，而不仅仅必须是一个通用型的调度器，因为“通用”必然在会在某种应用场景下表现不良。
+
+一些关于内核线程调度算法的参考资料如下：
+
+* [CFS Scheduler](https://www.kernel.org/doc/html/latest/scheduler/sched-design-CFS.html)
+* [Linux Kernel调度器的过去，现在和未来](https://my.oschina.net/u/4585157/blog/4672238)
+* [从几个问题开始理解CFS调度器](http://linuxperf.com/?p=42)
+* [Linux内核CFS调度器的实现](https://blog.eastonman.com/blog/2021/02/cfs/)
+
