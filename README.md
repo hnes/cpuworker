@@ -38,7 +38,7 @@ Please watch the latency which cmd 1 and cmd 4 yields carefully at every step an
 
 ## Test Result On AWS
 
-The server example/demo.go is running at an aws instance `c5d.12xlarge` and with the env `GOMAXPROCS` set to 16.
+The server [example/demo.go](https://github.com/hnes/cpuworker/blob/main/example/demo.go) is running at an aws instance `c5d.12xlarge` and with the env `GOMAXPROCS` set to 16.
 
 ```bash
 $ GOMAXPROCS=16 ./cpuworker-demo

@@ -59,7 +59,7 @@ Golang Runtime调度器的调度策略目前的实现为公平调度，但在实
 
 为了解决某些CPU Intensive Task可能会运行很长时间的问题，我们可以引入时间片的概念，这样调度器就能做更精细的调度，比如针对不同任务的时间片动态划分和优先级策略调整等等。
 
-代码和运行示例位于[此处](https://github.com/hnes/cpuworker/blob/5471e4cfaf3f57bf1f37f5cc6344bab5b5339501/README.md#test-result-on-aws)。
+代码和运行示例位于[此处](https://github.com/hnes/cpuworker/blob/main/README.md#test-result-on-aws)。
 
 实现中，我们为每个Task传一个checkpoint函数入参，Task在执行过程中应该在不影响性能的前提下尽可能多的调用checkpoint函数，在此函数的执行过程中，如果发现cpuworker调度器发来了suspend信号，就将自己挂起直到收到resume信号继续运行。
 
@@ -67,7 +67,7 @@ Golang Runtime调度器的调度策略目前的实现为公平调度，但在实
 
 上面针对CPU密集型任务的基础调度器在理论上已经能够解决我们的问题，但是具体在使用时需要应用自己做好划分，可能会带来一定复杂度，尤其是对于那些已有一定量代码遗产并且可能大部分是类似 “CPU Intensive + Event Intensive” 这样类型耦合的代码而言，比如：
 
-```
+```go
 func hybridTask() {
   for{
     wCh := make(chan struct{})
@@ -77,7 +77,7 @@ func hybridTask() {
     }()
     crc32.ChecksumIEEE(make([]byte, 1024*512))
     <-wCh
-	}
+  }
 }
 ```
 
