@@ -8,7 +8,7 @@ Working in process.
 
 Make sure the GOMAXPROCS is bigger than 1 and there is at least `GOMAXPROCS` physical OS threads available.
 
-Run the example/demo.go.
+Run the [example/demo.go](example/demo.go).
 
 ```bash
 # feel free to tune the parameters below if you like
@@ -38,7 +38,7 @@ Please watch the latency which cmd 1 and cmd 4 yields carefully at every step an
 
 ## Test Result On AWS
 
-The server [example/demo.go](https://github.com/hnes/cpuworker/blob/main/example/demo.go) is running at an aws instance `c5d.12xlarge` and with the env `GOMAXPROCS` set to 16.
+The server [example/demo.go](example/demo.go) is running at an aws instance `c5d.12xlarge` and with the env `GOMAXPROCS` set to 16.
 
 ```bash
 $ GOMAXPROCS=16 ./cpuworker-demo
