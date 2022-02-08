@@ -4,6 +4,10 @@
 
 Working in process.
 
+## Proposal For Go
+
+[proposal: runtime/scheduler: it is time to bring Go a better scheduler maybe like Linux Kernel's CFS](https://github.com/golang/go/issues/51071)
+
 ## Run the Demo
 
 Make sure the GOMAXPROCS is bigger than 1 and there is at least `GOMAXPROCS` physical OS threads available.
