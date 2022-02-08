@@ -52,6 +52,12 @@ func cpuIntensiveTaskWithCheckpoint(amt int, checkpointFp func()) uint32 {
 	return ck
 }
 
+func handleChecksumWithoutCpuWorker(w http.ResponseWriter, _ *http.Request) {
+	ts := time.Now()
+	ck := cpuIntensiveTask(10000 + mathrand.Intn(10000))
+	w.Write([]byte(fmt.Sprintln("crc32 (without cpuworker):", ck, "time cost:", time.Now().Sub(ts))))
+}
+
 func handleChecksumWithCpuWorkerAndHasCheckpoint(w http.ResponseWriter, _ *http.Request) {
 	ts := time.Now()
 	var ck uint32
@@ -68,13 +74,6 @@ func handleChecksumSmallTaskWithCpuWorker(w http.ResponseWriter, _ *http.Request
 		ck = cpuIntensiveTask(10)
 	}).Sync()
 	w.Write([]byte(fmt.Sprintln("crc32 (with cpuworker and small task):", ck, "time cost:", time.Now().Sub(ts))))
-}
-
-func handleChecksumWithoutCpuWorker(w http.ResponseWriter, _ *http.Request) {
-	ts := time.Now()
-	var ck uint32
-	ck = cpuIntensiveTask(10000 + mathrand.Intn(10000))
-	w.Write([]byte(fmt.Sprintln("crc32 (without cpuworker):", ck, "time cost:", time.Now().Sub(ts))))
 }
 
 func handleDelay(w http.ResponseWriter, _ *http.Request) {
